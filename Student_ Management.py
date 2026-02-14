@@ -1,23 +1,27 @@
 def  add_student():
     name = input("Enter name: ").strip()
     while not name.isalpha():
-        print("❌ name must contain latter only")
+        print("❌ name must contain letters only")
         name = input("Enter name again")
 
 
-    roll = int(input("Enter a roll number"))
+    roll = input("Enter a roll number: ").strip()
     while not roll.isdigit():
-        print("❌ only number contain")
-        roll = input("Enter roll number again")
+        print("❌ roll number must contain digits only")
+        roll = input("Enter roll number again: ").strip()
 
+    if roll_exists(roll):
+        print("❌ Roll number already exists!")
+        return    
+        
 
-    age = input("Enter age").strip()
+    age = input("Enter age: ").strip()
     while not age.isdigit():
         print("❌ age must contain number")
         age = input("Enter age again")
 
 
-    course = input("enter your course")
+    course = input("Enter your course: ")
 
     print("\nyou entered:")
     print(f"name:{name}")
@@ -28,7 +32,7 @@ def  add_student():
     confirm = input("you want save this?(yes/no):").strip().lower()
 
     if confirm!= "yes":
-        print("❌  data not save. Please try again")
+        print("❌  Data not saved. Please try again")
         return
 
 
@@ -37,7 +41,7 @@ def  add_student():
     with open("students.txt", "a") as file:
         file.write(f"{name}, {roll}, {age}, {course}\n")
 
-    print("✅ student add successfully")
+    print("✅ student added successfully")
 
 
 
@@ -47,7 +51,7 @@ def roll_exists(roll):
     try:
         with open("students.txt", "r") as file:
             for line in file:
-                existing_roll = line.strip().split(",")[1]
+                existing_roll = line.strip().split(",")[1].strip()
                 if existing_roll == roll:
                     return True
                 
@@ -61,31 +65,37 @@ def roll_exists(roll):
 def view_students():
     try:
         with open("students.txt", "r") as file:
-
             lines = file.readlines()
 
             if not lines:
-                print("no student found.")
+                print("No students found.")
                 return
             
-            print("\n==== student list ====") 
+            print("\n" + "=" * 70)
+            print(f"| {'NAME':<20} | {'ROLL NO':<12} | {'AGE':<5} | {'COURSE':<20} |")
+            print("-" * 70)
+            
             for line in lines:
-                name, roll, age, course = line.strip().split(",") #This line splits one student record from the file into roll, name, age, and course variables.
-                print(f"name: {name}| roll: {roll}| age: {age}| couse: {course}")
+                data = [x.strip() for x in line.strip().split(",")]
+                if len(data) == 4:
+                    name, roll, age, course = data
+                    print(f"| {name:<20} | {roll:<12} | {age:<5} | {course:<20} |")
+            
+            print("=" * 70 + "\n")
 
-    except FileNotFoundError:# It prevents the program from crashing if the data file does not exist.
-        print("No data file found") 
+    except FileNotFoundError:
+        print("No data file found.") 
 
 
 
 def search_student():
-    roll_to_find = input("enter roll number to search:")
+    roll_to_find = input("Enter roll number to search: ").strip()
     found = False
 
     try:
         with open("students.txt", "r") as file:
             for line in file:
-                name, roll, age, course = line.strip(). split(",")
+                name, roll, age, course = [x.strip() for x in line.strip().split(",")]
 
                 if roll == roll_to_find:
                     print("\nstudent found:")
@@ -97,7 +107,7 @@ def search_student():
                     found = True
                     break
         if not found:
-            print("student not found")
+            print("Student not found.")
 
     except FileNotFoundError:
         print("No data file found.")
@@ -105,22 +115,22 @@ def search_student():
     
 
 def update_student():
-    roll_to_update = input("Enter roll number to update: ")
+    roll_to_update = input("Enter roll number to update: ").strip()
     updated_lines = []
     found = False
 
     try:
         with open("students.txt", "r") as file:
             for line in file:
-                name, roll, age, course = line.strip().split(",")
+                name, roll, age, course = [x.strip() for x in line.strip().split(",")]
 
                 if roll == roll_to_update:
                     print("Enter new details:")
-                    name = input("New name: ")
-                    age = input("New age: ")
-                    course = input("New course: ")
+                    name = input("New name: ").strip()
+                    age = input("New age: ").strip()
+                    course = input("New course: ").strip()
 
-                    updated_lines.append(f"{name},{roll},{age},{course}\n")
+                    updated_lines.append(f"{name}, {roll}, {age}, {course}\n")
                     found = True
                 else:
                     updated_lines.append(line) 
@@ -143,14 +153,14 @@ def update_student():
 
 
 def delete_student():
-    roll_to_delete = input("Enter roll numbrt to delete:")
+    roll_to_delete = input("Enter roll number to delete: ").strip()
     updated_line = []
     found = False
 
     try:
         with open("students.txt", "r") as file:
             for line in file:
-                name, roll, age, course = line.strip().split(",")
+                name, roll, age, course = [x.strip() for x in line.strip().split(",")]
                 if roll!= roll_to_delete:
                     updated_line.append(line)
                 else:
@@ -161,7 +171,7 @@ def delete_student():
                 file.writelines(updated_line)
             print("Student deleted successfully")
         else:
-            print("student not found:")
+            print("Student not found.")
 
     except FileNotFoundError:
         print("No data file found.")           
@@ -203,7 +213,4 @@ while True:
         break
 
     else:
-        print("Invalide choice")                    
-
-        
-            
+        print("Invalid choice")                    
